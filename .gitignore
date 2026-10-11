@@ -1,0 +1,39 @@
+# Build output and local working copies
+target/
+tmp/
+output/
+runtime/
+.tools/
+data/
+*.log
+
+# Secrets and local environment
+.env
+.env.*
+*.pem
+*.p12
+*.jks
+*.keystore
+id_rsa
+id_rsa.pub
+*.key
+
+# Startup scripts and publication helpers are kept local
+scripts/
+*.ps1
+*.cmd
+*.bat
+*.sh
+
+# IDE and OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Archives, backups, and unrelated local files
+*.zip
+*.bak
+*.orig
+*.docx

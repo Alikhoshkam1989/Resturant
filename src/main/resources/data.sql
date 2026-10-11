@@ -1,0 +1,7 @@
+INSERT INTO categories (name, description, version) SELECT 'Gerechten', 'Warme maaltijden', 0 WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name='Gerechten');
+INSERT INTO categories (name, description, version) SELECT 'Dranken', 'Warme en koude dranken', 0 WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name='Dranken');
+INSERT INTO products (name, category_id, price, available, version) SELECT 'Pasta', id, 14.50, true, 0 FROM categories WHERE name='Gerechten' AND NOT EXISTS (SELECT 1 FROM products WHERE name='Pasta');
+INSERT INTO products (name, category_id, price, available, version) SELECT 'Thee', id, 3.00, true, 0 FROM categories WHERE name='Dranken' AND NOT EXISTS (SELECT 1 FROM products WHERE name='Thee');
+INSERT INTO dining_tables (table_number, seats, available, version) SELECT 1, 4, true, 0 WHERE NOT EXISTS (SELECT 1 FROM dining_tables WHERE table_number=1);
+INSERT INTO dining_tables (table_number, seats, available, version) SELECT 2, 2, true, 0 WHERE NOT EXISTS (SELECT 1 FROM dining_tables WHERE table_number=2);
+INSERT INTO reservations (customer_subject, customer_name, dining_table_id, starts_at, ends_at, guests, remarks, cancelled, version) SELECT '11111111-1111-4111-8111-111111111111', 'Demo Klant', id, TIMESTAMP '2035-06-01 16:00:00', TIMESTAMP '2035-06-01 18:00:00', 2, 'Voorbeeldreservering', false, 0 FROM dining_tables WHERE table_number=1 AND NOT EXISTS (SELECT 1 FROM reservations WHERE customer_subject='11111111-1111-4111-8111-111111111111');
