@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Restaurant API documentation</title>
+<style>body{font:16px/1.6 system-ui;max-width:1000px;margin:40px auto;padding:0 24px;color:#18344b}h1,h2{color:#007e80}section{border-top:1px solid #cad9de;margin-top:32px}pre{white-space:pre-wrap;background:#eff4f6;padding:16px;border-radius:6px}td,th{padding:8px;text-align:left;border-bottom:1px solid #cad9de}table{border-collapse:collapse;width:100%}</style>
+</head>
+<body>
+<h1>Restaurant API</h1>
+<p>Ali Khoshkam · Backend 2.0 · API documentation</p>
+<nav><a href="#authentication">Authentication</a> · <a href="#endpoints">Endpoints</a> · <a href="#validation">Validation</a> · <a href="#images">Images</a></nav>
+<section id="authentication"><h2>Authentication and responses</h2>
+<p>This REST API manages a restaurant's menu, tables, reservations, orders and invoices. Base URL: http://localhost:8080. Import exports/restaurant.postman_collection.json into Postman.</p>
+<p>Use Authorization Code + PKCE (S256) for login and registration. Keycloak realm: http://localhost:8081/realms/restaurant. Client: restaurant-postman. Postman callback: https://oauth.pstmn.io/v1/callback. Authorization path: /protocol/openid-connect/auth. Token path: /protocol/openid-connect/token. Scope: openid profile email.</p>
+<p>Local demo accounts: klant / Klant-Demo-2026! (CUSTOMER), personeel / Personeel-Demo-2026! (STAFF). New registrations receive CUSTOMER. A Keycloak administrator grants STAFF separately. These credentials are for local demonstrations only.</p>
+<pre>Authorization: Bearer &lt;access_token&gt;
+Content-Type: application/json</pre>
+<p>GET returns 200, POST returns 201 with Location, PUT returns 200 (image uploads: 204), DELETE returns 204. Errors: 400 invalid input, 401 missing or invalid token, 403 insufficient permission or ownership, 404 missing resource, 405 unsupported method, 409 conflict, 413 upload too large, 415 unsupported content type. Application errors use ProblemDetail; security-filter errors may have an empty body.</p>
+<pre>{"type":"about:blank","title":"Conflict","status":409,
+ "detail":"Table is reserved during this time slot"}</pre>
+<p>IDs are positive database identifiers. Lists are JSON arrays; individual resources are JSON objects. Dates are UTC without a suffix, for example 2030-12-01T17:00:00. Prices are final amounts in EUR. No list filters or pagination are supported. Choose a future date when testing reservations.</p></section>
+<section id="endpoints"><h2>Resource endpoints</h2>
+<p>Each resource below supports GET /api/{resource} (list), GET /api/{resource}/{id} (one item), POST /api/{resource} (create), PUT /api/{resource}/{id} (update), and DELETE /api/{resource}/{id} (delete or cancel). Replace {resource} with the name in the table. GET returns 200 or 404 for a missing item. POST returns the created object and Location. PUT returns the updated object. DELETE returns 204 or 409 when a business rule prevents deletion.</p>
+<table><thead><tr><th>Resource</th><th>Access</th><th>Rules</th></tr></thead><tbody>
+<tr><td>categories</td><td>GET: CUSTOMER/STAFF; changes: STAFF</td><td>Cannot delete a category containing products.</td></tr>
+<tr><td>products</td><td>GET: CUSTOMER/STAFF; changes: STAFF</td><td>Ordered products cannot be deleted; set available to false.</td></tr>
+<tr><td>tables</td><td>GET: CUSTOMER/STAFF; changes: STAFF</td><td>Availability is general usability; reservations determine occupancy.</td></tr>
+<tr><td>reservations</td><td>CUSTOMER: own reservations; STAFF: all</td><td>DELETE cancels and preserves history; repeated cancellation is allowed. Reservations last two hours. Overlaps are rejected; adjacent slots are allowed.</td></tr>
+<tr><td>orders</td><td>STAFF</td><td>The server calculates totals and snapshots product names and prices. Invoiced orders are locked.</td></tr>
+<tr><td>invoices</td><td>STAFF</td><td>One invoice per order. PUT accepts {"paid":true}. Payment cannot be reversed and paid invoices cannot be deleted.</td></tr>
+</tbody></table>
+<h3>Category request and response</h3>
+<pre>POST /api/categories
+{"name":"Desserts","description":"Sweet dishes"}
+201: {"id":3,"name":"Desserts","description":"Sweet dishes"}</pre>
+<h3>Product request and response</h3>
+<pre>POST /api/products
+{"name":"Tiramisu","categoryId":1,"price":7.5,"available":true}
+201: {"id":3,"name":"Tiramisu","categoryId":1,"price":7.5,"available":true,"imageUrl":"/api/products/3/image"}</pre>
+<h3>Table request and response</h3>
+<pre>POST /api/tables
+{"tableNumber":3,"seats":4,"available":true}
+201: {"id":3,"tableNumber":3,"seats":4,"available":true}</pre>
+<h3>Reservation request and response</h3>
+<pre>POST /api/reservations
+{"customerName":"Ali","tableId":1,"startsAt":"2030-12-01T17:00:00","guests":2,"remarks":"By the window"}
+201: {"id":2,"customerName":"Ali","tableId":1,"startsAt":"2030-12-01T17:00:00","endsAt":"2030-12-01T19:00:00","guests":2,"remarks":"By the window","cancelled":false}</pre>
+<h3>Order request and response</h3>
+<pre>POST /api/orders
+{"tableId":1,"lines":[{"productId":1,"quantity":2}]}
+201: {"id":1,"tableId":1,"createdAt":"2030-12-01T17:10:00","lines":[{"productId":1,"productName":"Pasta","unitPrice":14.5,"quantity":2}],"total":29.0}</pre>
+<h3>Invoice request and response</h3>
+<pre>POST /api/invoices
+{"orderId":1}
+201: {"id":1,"orderId":1,"createdAt":"2030-12-01T18:00:00","total":29.0,"paid":false}
+PUT /api/invoices/1
+{"paid":true}</pre>
+<p>For resources other than invoices, PUT uses the same input fields as POST. Response-only fields are managed by the server.</p></section>
+<section id="validation"><h2>Input validation</h2>
+<ul>
+<li>Category: name is required, nonblank, unique and at most 80 characters. Description is required and at most 500 characters.</li>
+<li>Product: name is required and at most 100 characters. categoryId must exist. price is required, nonnegative, with at most eight integer and two decimal digits. available is a required boolean.</li>
+<li>Table: tableNumber must be unique and at least 1. seats must be between 1 and 50. available is required. Capacity cannot be reduced while reservations are linked. Disabling availability does not cancel existing reservations.</li>
+<li>Reservation: customerName is required and at most 100 characters. tableId must exist. startsAt must be in the future. guests must be between 1 and 50 and fit the table. remarks is required and at most 1000 characters. Ownership is taken from the token; endsAt and cancelled are server-managed.</li>
+<li>Order: tableId must identify an available table. lines must contain 1 to 100 non-null items. Each productId must exist and be available; quantity must be between 1 and 100. Duplicate products are rejected. total and createdAt are server-managed.</li>
+<li>Invoice: POST requires orderId referring to an order without an invoice. PUT requires a boolean paid value. Amount and date are server-managed.</li>
+</ul>
+<p>Invalid JSON inputs return 400; missing references return 404. Overlaps, duplicate names/numbers and blocked changes return 409. SQL and internal exception details are not returned to clients.</p></section>
+<section id="images"><h2>Images and permissions</h2>
+<p>PUT /api/products/{productId}/image: STAFF uploads a multipart/form-data body with file field file. Success returns 204. Only PNG/JPEG up to 2 MiB and 16 million pixels are allowed. Empty or corrupt images return 400; oversized files return 413; unsupported formats return 415. Client filenames are never used as filesystem paths.</p>
+<pre>curl.exe -X PUT http://localhost:8080/api/products/1/image ^
+ -H "Authorization: Bearer TOKEN" -F "file=@product.png"</pre>
+<p>GET /api/products/{productId}/image: CUSTOMER and STAFF receive image bytes with image/png or image/jpeg Content-Type and a safe attachment filename. A missing image returns 404.</p>
+<p>Public pages: GET /, /index.html and /api-docs.html. Unauthenticated API requests return 401. CUSTOMER can read the catalog, tables and images and manage their own reservations. STAFF can access all API endpoints. Unknown realm roles have no API access.</p>
+<p>Keycloak administrators manage accounts and roles but are not a separate API role. JWTs require a valid signature, configured issuer, subject and restaurant-api audience.</p>
+<p>Sources: supplied project brief and concept, Spring Security JWT documentation and Keycloak realm import documentation. AI assistance: OpenAI Codex. Prompts: docs/ai-prompts.md.</p></section>
+</body></html>

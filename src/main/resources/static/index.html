@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172e2b">
+  <title>The Table · Restaurant</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header><a class="brand" href="/" aria-label="The Table home"><span class="brand-mark">T.</span><span>THE TABLE<small>GOOD FOOD. GOOD COMPANY.</small></span></a><div id="account"></div></header>
+  <div id="notice" role="status" aria-live="polite" hidden></div>
+  <div id="shell"><nav id="navigation" aria-label="Main navigation"></nav><main id="content" tabindex="-1"><p class="loading">Preparing your table…</p></main></div>
+  <footer><span>THE TABLE <span class="muted">/ Restaurant by Ali Khoshkam</span></span><a href="/api-docs.html">API documentation</a></footer>
+  <dialog id="editor" aria-labelledby="dialog-title"><form id="editor-form"><div class="dialog-heading"><h2 id="dialog-title"></h2><button type="button" class="icon-button" data-action="close" aria-label="Close dialog">×</button></div><div id="fields"></div><p id="form-error" role="alert" tabindex="-1" hidden></p><div class="dialog-actions"><button type="button" class="secondary" data-action="close">Cancel</button><button type="submit" id="save">Save changes</button></div></form></dialog>
+  <noscript><p class="notice">Enable JavaScript to use the restaurant application.</p></noscript>
+</body>
+</html>
