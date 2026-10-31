@@ -1,0 +1,108 @@
+{
+  "samples": {
+    "categories": [
+      {
+        "name": "Desserts",
+        "description": "Nagerechten"
+      },
+      {
+        "id": 3,
+        "name": "Desserts",
+        "description": "Nagerechten"
+      }
+    ],
+    "products": [
+      {
+        "name": "Tiramisu",
+        "categoryId": 1,
+        "price": 7.5,
+        "available": true
+      },
+      {
+        "id": 3,
+        "name": "Tiramisu",
+        "categoryId": 1,
+        "price": 7.5,
+        "available": true,
+        "imageUrl": "/api/products/3/image"
+      }
+    ],
+    "tables": [
+      {
+        "tableNumber": 3,
+        "seats": 4,
+        "available": true
+      },
+      {
+        "id": 3,
+        "tableNumber": 3,
+        "seats": 4,
+        "available": true
+      }
+    ],
+    "reservations": [
+      {
+        "customerName": "Ali",
+        "tableId": 1,
+        "startsAt": "2030-12-01T17:00:00",
+        "guests": 2,
+        "remarks": "Bij het raam"
+      },
+      {
+        "id": 2,
+        "customerName": "Ali",
+        "tableId": 1,
+        "startsAt": "2030-12-01T17:00:00",
+        "endsAt": "2030-12-01T19:00:00",
+        "guests": 2,
+        "remarks": "Bij het raam",
+        "cancelled": false
+      }
+    ],
+    "orders": [
+      {
+        "tableId": 1,
+        "lines": [
+          {
+            "productId": 1,
+            "quantity": 2
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "tableId": 1,
+        "createdAt": "2030-12-01T17:10:00",
+        "lines": [
+          {
+            "productId": 1,
+            "productName": "Pasta",
+            "unitPrice": 14.5,
+            "quantity": 2
+          }
+        ],
+        "total": 29.0
+      }
+    ],
+    "invoices": [
+      {
+        "orderId": 1
+      },
+      {
+        "id": 1,
+        "orderId": 1,
+        "createdAt": "2030-12-01T18:00:00",
+        "total": 29.0,
+        "paid": false
+      }
+    ]
+  },
+  "descriptions": {
+    "categories": "Categorie beheren. Verwijderen is alleen mogelijk zonder gekoppelde producten.",
+    "products": "Product beheren. Een gebruikt product kan niet worden verwijderd; zet available op false.",
+    "tables": "Tafel beheren. Available is de algemene inzetbaarheid; reserveringen bepalen bezetting per tijdvak.",
+    "reservations": "Eigen reserveringen beheren; personeel mag alle reserveringen lezen, wijzigen en annuleren. DELETE annuleert met behoud van historie.",
+    "orders": "Personeel beheert bestellingen. Prijzen en namen worden vastgelegd; server berekent total. Gefactureerde bestellingen zijn vergrendeld.",
+    "invoices": "Personeel maakt een factuur per bestelling. PUT wijzigt alleen paid. Betaalde facturen kunnen niet worden verwijderd of teruggezet."
+  }
+}

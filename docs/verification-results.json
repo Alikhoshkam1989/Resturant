@@ -1,0 +1,61 @@
+{
+  "verified_on": "2026-09-16",
+  "command": "mvn -B -q verify",
+  "exit_code": 0,
+  "java": "Temurin 21.0.12.1",
+  "spring_boot": "3.5.6",
+  "tests": 35,
+  "suites": [
+    {
+      "name": "nl.alikhoshkam.restaurant.config.JwtDecoderTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "nl.alikhoshkam.restaurant.controller.TableControllerWebMvcTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "nl.alikhoshkam.restaurant.RestaurantIntegrationTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "nl.alikhoshkam.restaurant.service.PricingServiceTest",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "nl.alikhoshkam.restaurant.service.ReservationPolicyTest",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ],
+  "targeted_service_coverage": [
+    {
+      "class": "nl/alikhoshkam/restaurant/service/ReservationPolicy",
+      "covered_lines": 9,
+      "missed_lines": 0
+    },
+    {
+      "class": "nl/alikhoshkam/restaurant/service/PricingService",
+      "covered_lines": 13,
+      "missed_lines": 0
+    }
+  ],
+  "live_keycloak_version": "26.7.3",
+  "live_api_smoke": "passed",
+  "registration_pkce_smoke": "passed",
+  "postgres_verified": false
+}

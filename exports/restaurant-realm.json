@@ -1,0 +1,119 @@
+{
+  "realm": "restaurant",
+  "enabled": true,
+  "displayName": "Restaurant API",
+  "registrationAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "bruteForceProtected": true,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      {
+        "name": "CUSTOMER",
+        "description": "Klant: eigen reserveringen en menukaart"
+      },
+      {
+        "name": "STAFF",
+        "description": "Personeel: restaurantbeheer"
+      },
+      {
+        "name": "default-roles-restaurant",
+        "composite": true,
+        "composites": {
+          "realm": [
+            "CUSTOMER"
+          ]
+        }
+      }
+    ]
+  },
+  "defaultRole": {
+    "name": "default-roles-restaurant"
+  },
+  "clients": [
+    {
+      "clientId": "restaurant-api",
+      "enabled": true,
+      "bearerOnly": true,
+      "protocol": "openid-connect"
+    },
+    {
+      "clientId": "restaurant-postman",
+      "name": "Restaurant lokaal testen",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "webOrigins": ["http://localhost:8080"],
+      "directAccessGrantsEnabled": true,
+      "fullScopeAllowed": true,
+      "redirectUris": [
+        "https://oauth.pstmn.io/v1/callback",
+        "http://localhost:8080/*"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "profile",
+        "email",
+        "roles",
+        "basic"
+      ],
+      "protocolMappers": [
+        {
+          "name": "restaurant-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "restaurant-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "11111111-1111-4111-8111-111111111111",
+      "username": "klant",
+      "firstName": "Demo",
+      "lastName": "Klant",
+      "email": "klant@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": [
+        "CUSTOMER"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Klant-Demo-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "22222222-2222-4222-8222-222222222222",
+      "username": "personeel",
+      "firstName": "Demo",
+      "lastName": "Medewerker",
+      "email": "personeel@example.test",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": [
+        "STAFF"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "Personeel-Demo-2026!",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}

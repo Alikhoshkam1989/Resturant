@@ -1,0 +1,725 @@
+{
+  "info": {
+    "name": "Restaurant API - Ali Khoshkam",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Lokale demonstratie. Start met een tokenverzoek. Gebruik voor normaal inloggen Authorization Code + PKCE; password grant is uitsluitend ingeschakeld voor de lokale testcollectie."
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "authUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "categoriesId",
+      "value": "1"
+    },
+    {
+      "key": "productsId",
+      "value": "1"
+    },
+    {
+      "key": "tablesId",
+      "value": "1"
+    },
+    {
+      "key": "reservationsId",
+      "value": "1"
+    },
+    {
+      "key": "ordersId",
+      "value": "1"
+    },
+    {
+      "key": "invoicesId",
+      "value": "1"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Authenticatie (lokale demo)",
+      "item": [
+        {
+          "name": "Token klant",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{authUrl}}/realms/restaurant/protocol/openid-connect/token",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "restaurant-postman",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "klant",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Klant-Demo-2026!",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Token ontvangen\", () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.collectionVariables.set(\"token\", pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token personeel",
+          "request": {
+            "method": "POST",
+            "auth": {
+              "type": "noauth"
+            },
+            "url": "{{authUrl}}/realms/restaurant/protocol/openid-connect/token",
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "restaurant-postman",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "personeel",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "Personeel-Demo-2026!",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Token ontvangen\", () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) pm.collectionVariables.set(\"token\", pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "categories - personeel (lezen menukaart/tafels ook klant)",
+      "item": [
+        {
+          "name": "GET categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories",
+            "description": "Categorie beheren. Verwijderen is alleen mogelijk zonder gekoppelde producten.",
+            "header": []
+          }
+        },
+        {
+          "name": "GET categories/{{categoriesId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories/{{categoriesId}}",
+            "description": "Categorie beheren. Verwijderen is alleen mogelijk zonder gekoppelde producten.",
+            "header": []
+          }
+        },
+        {
+          "name": "POST categories",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/categories",
+            "description": "Categorie beheren. Verwijderen is alleen mogelijk zonder gekoppelde producten.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Desserts\",\n  \"description\": \"Nagerechten\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Aangemaakt\", () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"categoriesId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT categories/{{categoriesId}}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/categories/{{categoriesId}}",
+            "description": "Categorie beheren. Verwijderen is alleen mogelijk zonder gekoppelde producten.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Desserts\",\n  \"description\": \"Nagerechten\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE categories/{{categoriesId}}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/categories/{{categoriesId}}",
+            "description": "Categorie beheren. Verwijderen is alleen mogelijk zonder gekoppelde producten.",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "products - personeel (lezen menukaart/tafels ook klant)",
+      "item": [
+        {
+          "name": "GET products",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products",
+            "description": "Product beheren. Een gebruikt product kan niet worden verwijderd; zet available op false.",
+            "header": []
+          }
+        },
+        {
+          "name": "GET products/{{productsId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/{{productsId}}",
+            "description": "Product beheren. Een gebruikt product kan niet worden verwijderd; zet available op false.",
+            "header": []
+          }
+        },
+        {
+          "name": "POST products",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/products",
+            "description": "Product beheren. Een gebruikt product kan niet worden verwijderd; zet available op false.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tiramisu\",\n  \"categoryId\": 1,\n  \"price\": 7.5,\n  \"available\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Aangemaakt\", () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"productsId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT products/{{productsId}}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/products/{{productsId}}",
+            "description": "Product beheren. Een gebruikt product kan niet worden verwijderd; zet available op false.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tiramisu\",\n  \"categoryId\": 1,\n  \"price\": 7.5,\n  \"available\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE products/{{productsId}}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/products/{{productsId}}",
+            "description": "Product beheren. Een gebruikt product kan niet worden verwijderd; zet available op false.",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "tables - personeel (lezen menukaart/tafels ook klant)",
+      "item": [
+        {
+          "name": "GET tables",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/tables",
+            "description": "Tafel beheren. Available is de algemene inzetbaarheid; reserveringen bepalen bezetting per tijdvak.",
+            "header": []
+          }
+        },
+        {
+          "name": "GET tables/{{tablesId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/tables/{{tablesId}}",
+            "description": "Tafel beheren. Available is de algemene inzetbaarheid; reserveringen bepalen bezetting per tijdvak.",
+            "header": []
+          }
+        },
+        {
+          "name": "POST tables",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/tables",
+            "description": "Tafel beheren. Available is de algemene inzetbaarheid; reserveringen bepalen bezetting per tijdvak.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableNumber\": 3,\n  \"seats\": 4,\n  \"available\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Aangemaakt\", () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"tablesId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT tables/{{tablesId}}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/tables/{{tablesId}}",
+            "description": "Tafel beheren. Available is de algemene inzetbaarheid; reserveringen bepalen bezetting per tijdvak.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableNumber\": 3,\n  \"seats\": 4,\n  \"available\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE tables/{{tablesId}}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/tables/{{tablesId}}",
+            "description": "Tafel beheren. Available is de algemene inzetbaarheid; reserveringen bepalen bezetting per tijdvak.",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "reservations - klant/personeel",
+      "item": [
+        {
+          "name": "GET reservations",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reservations",
+            "description": "Eigen reserveringen beheren; personeel mag alle reserveringen lezen, wijzigen en annuleren. DELETE annuleert met behoud van historie.",
+            "header": []
+          }
+        },
+        {
+          "name": "GET reservations/{{reservationsId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reservations/{{reservationsId}}",
+            "description": "Eigen reserveringen beheren; personeel mag alle reserveringen lezen, wijzigen en annuleren. DELETE annuleert met behoud van historie.",
+            "header": []
+          }
+        },
+        {
+          "name": "POST reservations",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/reservations",
+            "description": "Eigen reserveringen beheren; personeel mag alle reserveringen lezen, wijzigen en annuleren. DELETE annuleert met behoud van historie.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"Ali\",\n  \"tableId\": 1,\n  \"startsAt\": \"2030-12-01T17:00:00\",\n  \"guests\": 2,\n  \"remarks\": \"Bij het raam\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Aangemaakt\", () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"reservationsId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT reservations/{{reservationsId}}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/reservations/{{reservationsId}}",
+            "description": "Eigen reserveringen beheren; personeel mag alle reserveringen lezen, wijzigen en annuleren. DELETE annuleert met behoud van historie.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"Ali\",\n  \"tableId\": 1,\n  \"startsAt\": \"2030-12-01T17:00:00\",\n  \"guests\": 2,\n  \"remarks\": \"Bij het raam\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE reservations/{{reservationsId}}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/reservations/{{reservationsId}}",
+            "description": "Eigen reserveringen beheren; personeel mag alle reserveringen lezen, wijzigen en annuleren. DELETE annuleert met behoud van historie.",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "orders - personeel (lezen menukaart/tafels ook klant)",
+      "item": [
+        {
+          "name": "GET orders",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders",
+            "description": "Personeel beheert bestellingen. Prijzen en namen worden vastgelegd; server berekent total. Gefactureerde bestellingen zijn vergrendeld.",
+            "header": []
+          }
+        },
+        {
+          "name": "GET orders/{{ordersId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/orders/{{ordersId}}",
+            "description": "Personeel beheert bestellingen. Prijzen en namen worden vastgelegd; server berekent total. Gefactureerde bestellingen zijn vergrendeld.",
+            "header": []
+          }
+        },
+        {
+          "name": "POST orders",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/orders",
+            "description": "Personeel beheert bestellingen. Prijzen en namen worden vastgelegd; server berekent total. Gefactureerde bestellingen zijn vergrendeld.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableId\": 1,\n  \"lines\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Aangemaakt\", () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"ordersId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT orders/{{ordersId}}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/orders/{{ordersId}}",
+            "description": "Personeel beheert bestellingen. Prijzen en namen worden vastgelegd; server berekent total. Gefactureerde bestellingen zijn vergrendeld.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tableId\": 1,\n  \"lines\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE orders/{{ordersId}}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/orders/{{ordersId}}",
+            "description": "Personeel beheert bestellingen. Prijzen en namen worden vastgelegd; server berekent total. Gefactureerde bestellingen zijn vergrendeld.",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "invoices - personeel (lezen menukaart/tafels ook klant)",
+      "item": [
+        {
+          "name": "GET invoices",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/invoices",
+            "description": "Personeel maakt een factuur per bestelling. PUT wijzigt alleen paid. Betaalde facturen kunnen niet worden verwijderd of teruggezet.",
+            "header": []
+          }
+        },
+        {
+          "name": "GET invoices/{{invoicesId}}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/invoices/{{invoicesId}}",
+            "description": "Personeel maakt een factuur per bestelling. PUT wijzigt alleen paid. Betaalde facturen kunnen niet worden verwijderd of teruggezet.",
+            "header": []
+          }
+        },
+        {
+          "name": "POST invoices",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/invoices",
+            "description": "Personeel maakt een factuur per bestelling. PUT wijzigt alleen paid. Betaalde facturen kunnen niet worden verwijderd of teruggezet.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Aangemaakt\", () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"invoicesId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT invoices/{{invoicesId}}",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/invoices/{{invoicesId}}",
+            "description": "Personeel maakt een factuur per bestelling. PUT wijzigt alleen paid. Betaalde facturen kunnen niet worden verwijderd of teruggezet.",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paid\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "DELETE invoices/{{invoicesId}}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/invoices/{{invoicesId}}",
+            "description": "Personeel maakt een factuur per bestelling. PUT wijzigt alleen paid. Betaalde facturen kunnen niet worden verwijderd of teruggezet.",
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productafbeeldingen",
+      "item": [
+        {
+          "name": "Upload afbeelding (personeel)",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/products/{{productsId}}/image",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download afbeelding (klant/personeel)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/products/{{productsId}}/image"
+          }
+        }
+      ]
+    }
+  ]
+}
