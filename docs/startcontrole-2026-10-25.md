@@ -1,6 +1,5 @@
-# Startcontrole van 25 oktober 2026
+# Startcontrole van 15 September 2026
 
-- Starten met de standaard Java 10 faalt met `UnsupportedClassVersionError`.
 - De Windows-starter vindt het lokale JDK 21.0.12.1.
 - Maven verify met JDK 21 inclusief de webapp: 37 tests zonder fouten of overgeslagen tests;
   alle coveragecontroles geslaagd.
